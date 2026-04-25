@@ -23,8 +23,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r automation/requirements.txt
 
-      - name: Run Scraper
+      - name: Run AI Analyst
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-        run: python automation/scrapers/lmsys_scraper.py
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: python automation/scrapers/ai_analyst.py
