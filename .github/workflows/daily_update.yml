@@ -1,0 +1,30 @@
+name: Daily AI Radar Update
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Roda todo dia à meia-noite
+  workflow_dispatch: # Permite rodar manualmente pelo painel do GitHub
+
+jobs:
+  update-rankings:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r automation/requirements.txt
+
+      - name: Run Scraper
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: python automation/scrapers/lmsys_scraper.py

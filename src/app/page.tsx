@@ -1,7 +1,68 @@
-import { categories } from "@/data/categories";
+"use client";
+
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
+interface AIModel {
+  name: string;
+  version: string | null;
+  rank_position: number;
+}
+
+interface AICategory {
+  id: number;
+  name: string;
+  description: string;
+  icon: string;
+  ai_models: AIModel[];
+}
+
 export default function Home() {
+  const [categories, setCategories] = useState<AICategory[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      const { data, error } = await supabase
+        .from('categories')
+        .select(`
+          id,
+          name,
+          description,
+          icon,
+          ai_models (
+            name,
+            version,
+            rank_position
+          )
+        `)
+        .order('id', { ascending: true });
+
+      if (error) {
+        console.error("Erro ao buscar dados:", error);
+      } else {
+        // Ordenar os modelos por rank_position dentro de cada categoria
+        const formattedData = data.map((cat: any) => ({
+          ...cat,
+          ai_models: cat.ai_models.sort((a: any, b: any) => a.rank_position - b.rank_position)
+        }));
+        setCategories(formattedData);
+      }
+      setLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center font-sans">
+        <div className="text-xl font-semibold text-blue-600 animate-pulse">Carregando Radar...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
       {/* Header */}
@@ -40,7 +101,7 @@ export default function Home() {
                   Top Rankings
                 </h3>
                 <div className="space-y-2">
-                  {category.topModels.map((model, index) => (
+                  {category.ai_models.map((model, index) => (
                     <div 
                       key={model.name + index}
                       className={`flex items-center justify-between p-2 rounded-lg ${
