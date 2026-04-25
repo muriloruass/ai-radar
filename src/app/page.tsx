@@ -1,4 +1,5 @@
 import { categories } from "@/data/categories";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -71,10 +72,16 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="max-w-6xl mx-auto py-12 px-6 border-t border-gray-200 mt-12 text-center">
+      <footer className="max-w-6xl mx-auto py-12 px-6 border-t border-gray-200 mt-12 text-center flex flex-col items-center gap-4">
         <p className="text-gray-500 text-sm">
           AI Radar • Documento de Visão v1.0 • Abril 2026
         </p>
+        <Link 
+          href="/admin" 
+          className="text-xs text-gray-400 hover:text-blue-500 transition-colors flex items-center gap-1"
+        >
+          ⚙️ Acesso Administrativo
+        </Link>
       </footer>
     </div>
   );
